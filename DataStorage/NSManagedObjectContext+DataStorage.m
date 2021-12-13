@@ -121,7 +121,7 @@ static NSString * const kParseDataHasDuplicatesKey = @"parseDataHasDuplicates";
             break;
         }
 
-        LOG_ON_ERROR(error);
+        [DPDataStorage logOnError: error];
     }
 
     if (error && inout_error) *inout_error = error;

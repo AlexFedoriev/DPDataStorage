@@ -95,7 +95,7 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
     if ([[NSFileManager defaultManager] fileExistsAtPath:path] == NO) {
         NSError *error = nil;
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
-        LOG_ON_ERROR(error);
+        [DPDataStorage logOnError: error];
     }
 
     return [NSURL fileURLWithPath:[path stringByAppendingPathComponent:@"DataStorage.sqlite"] isDirectory:NO];
@@ -173,6 +173,24 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
     [NSThread isMainThread] ? action() : dispatch_async(dispatch_get_main_queue(), action);
 }
 
++ (void)logOnError:(NSError *)error {
+    if (error) {
+        NSLog(@"WARNING: %s, %@", __FUNCTION__, error);
+    }
+}
+
++ (void)failOnError:(NSError *)error {
+#if DEBUG
+    if (error) {
+        NSLog(@"ERROR: %s, %@", __FUNCTION__, error); __builtin_trap();
+    }
+#else
+    if (error) {
+        NSLog(@"ERROR: %s, %@", __FUNCTION__, error); abort();
+    }
+#endif
+}
+
 #pragma mark -
 
 - (void)setFetchRequestTemplate:(NSFetchRequest *)fetchRequestTemplate forName:(NSString *)name {
@@ -222,15 +240,16 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
                 _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
                 if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:self.defaultStoreConfiguration URL:self.URL options:options error:&error]) {
                     if (self.allowStoreDropOnError) {
-                        LOG_ON_ERROR(error); error = nil;
+                        [DPDataStorage logOnError: error];
+                        error = nil;
                         [[NSFileManager defaultManager] removeItemAtURL:self.URL error:&error];
-                        FAIL_ON_ERROR(error);
+                        [DPDataStorage failOnError: error];
                         
                         if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:self.defaultStoreConfiguration URL:self.URL options:options error:&error]) {
-                            FAIL_ON_ERROR(error);
+                            [DPDataStorage failOnError: error];
                         }
                     } else {
-                        FAIL_ON_ERROR(error);
+                        [DPDataStorage failOnError: error];
                     }
                 }
             }
@@ -238,7 +257,7 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
                 NSError *error = nil;
                 _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
                 if (![_persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:self.defaultStoreConfiguration URL:nil options:nil error:&error]) {
-                    FAIL_ON_ERROR(error);
+                    [DPDataStorage failOnError: error];
                 }
             }
         }

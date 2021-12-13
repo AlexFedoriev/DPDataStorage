@@ -18,13 +18,6 @@ extern NSString * const _Nonnull DPDataStorageNotificationNameKey;
 
 #define DPMainThreadAssert() NSAssert([NSThread isMainThread], @"%s should be call in main thread only", __FUNCTION__)
 
-#define LOG_ON_ERROR(error) {if (error) {NSLog(@"WARNING: %s, %@", __FUNCTION__, error);}}
-#if DEBUG
-    #define FAIL_ON_ERROR(error) {if (error) {NSLog(@"ERROR: %s, %@", __FUNCTION__, error); __builtin_trap();}}
-#else
-    #define FAIL_ON_ERROR(error) {if (error) {NSLog(@"ERROR: %s, %@", __FUNCTION__, error); abort();}}
-#endif
-
 @interface DPDataStorage : NSObject
 @property (readonly, strong, nonatomic) NSManagedObjectModel * _Nonnull managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator * _Nonnull persistentStoreCoordinator;
@@ -60,6 +53,18 @@ extern NSString * const _Nonnull DPDataStorageNotificationNameKey;
  @discussion Use to set current `DPDataStorage` object as default.
  */
 - (void)makeDefault;
+
+/**
+ @method
+ @discussion Use to logger `DPDataStorage` errors.
+ */
++ (void)logOnError:(NSError * _Nullable)error;
+
+/**
+ @method
+ @discussion Use to logger `DPDataStorage` fails errors.
+ */
++ (void)failOnError:(NSError * _Nullable)error;
 
 /**
  @method
