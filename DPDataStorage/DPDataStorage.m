@@ -177,6 +177,10 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
     // Do nothing
 }
 
+- (void)errorDidAppear:(NSError * _Nullable)error {
+    FAIL_ON_ERROR(error);
+}
+
 #pragma mark -
 
 - (void)setFetchRequestTemplate:(NSFetchRequest *)fetchRequestTemplate forName:(NSString *)name {
@@ -227,19 +231,15 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
                 if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:self.defaultStoreConfiguration URL:self.URL options:options error:&error]) {
                     if (self.allowStoreDropOnError) {
                         [self logOnError:error];
-                        LOG_ON_ERROR(error);
                         error = nil;
                         [[NSFileManager defaultManager] removeItemAtURL:self.URL error:&error];
-                        [self logOnError:error];
-                        FAIL_ON_ERROR(error);
+                        [self errorDidAppear:error];
                         
                         if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:self.defaultStoreConfiguration URL:self.URL options:options error:&error]) {
-                            [self logOnError:error];
-                            FAIL_ON_ERROR(error);
+                            [self errorDidAppear:error];
                         }
                     } else {
-                        [self logOnError:error];
-                        FAIL_ON_ERROR(error);
+                        [self errorDidAppear:error];
                     }
                 }
             }
@@ -247,8 +247,7 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
                 NSError *error = nil;
                 _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
                 if (![_persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:self.defaultStoreConfiguration URL:nil options:nil error:&error]) {
-                    [self logOnError:error];
-                    FAIL_ON_ERROR(error);
+                    [self errorDidAppear:error];
                 }
             }
         }

@@ -84,6 +84,12 @@ extern NSString * const _Nonnull DPDataStorageNotificationNameKey;
 
 /**
  @method
+ @discussion Use to logger `DPDataStorage` errors.
+ */
+- (void)errorDidAppear:(NSError * _Nullable)error;
+
+/**
+ @method
  @discussion Use to set current default `DPDataStorage` object to nil .
  */
 + (void)resetDefaultStorage;
