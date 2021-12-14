@@ -173,6 +173,10 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
     [NSThread isMainThread] ? action() : dispatch_async(dispatch_get_main_queue(), action);
 }
 
+- (void)logOnError:(NSError *)error {
+    // Do nothing
+}
+
 #pragma mark -
 
 - (void)setFetchRequestTemplate:(NSFetchRequest *)fetchRequestTemplate forName:(NSString *)name {
@@ -222,14 +226,19 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
                 _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
                 if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:self.defaultStoreConfiguration URL:self.URL options:options error:&error]) {
                     if (self.allowStoreDropOnError) {
-                        LOG_ON_ERROR(error); error = nil;
+                        [self logOnError:error];
+                        LOG_ON_ERROR(error);
+                        error = nil;
                         [[NSFileManager defaultManager] removeItemAtURL:self.URL error:&error];
+                        [self logOnError:error];
                         FAIL_ON_ERROR(error);
                         
                         if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:self.defaultStoreConfiguration URL:self.URL options:options error:&error]) {
+                            [self logOnError:error];
                             FAIL_ON_ERROR(error);
                         }
                     } else {
+                        [self logOnError:error];
                         FAIL_ON_ERROR(error);
                     }
                 }
@@ -238,6 +247,7 @@ NSString * const DPDataStorageNotificationNameKey = @"name";
                 NSError *error = nil;
                 _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
                 if (![_persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:self.defaultStoreConfiguration URL:nil options:nil error:&error]) {
+                    [self logOnError:error];
                     FAIL_ON_ERROR(error);
                 }
             }
