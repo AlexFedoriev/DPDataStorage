@@ -35,7 +35,7 @@
     
     NSError *error = nil;
     NSUInteger result = [context countForFetchRequest:fetchRequest error:&error];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
     
     return result;
 }
@@ -53,7 +53,7 @@
     
     NSError *error = nil;
     id result = [[context executeFetchRequest:fetchRequest error:&error] lastObject];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
     
     return result;
 }
@@ -70,7 +70,7 @@
     
     NSError *error = nil;
     id result = [[context executeFetchRequest:fetchRequest error:&error] lastObject];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
     
     return result;
 }
@@ -92,7 +92,7 @@
     
     NSError *error = nil;
     id result = [[context executeFetchRequest:fetchRequest error:&error] lastObject];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
     
     return result;
 }
@@ -107,7 +107,7 @@
     
     NSError *error = nil;
     id result = [context executeFetchRequest:fetchRequest error:&error];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
     
     return result ? result : @[];
 }
@@ -122,7 +122,7 @@
 
     NSError *error = nil;
     id result = [context executeFetchRequest:fetchRequest error:&error];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
 
     return result ? result : @[];
 }
@@ -133,7 +133,7 @@
     
     NSError *error = nil;
     id result = [[context executeFetchRequest:fetchRequest error:&error] lastObject];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
     
     return result;
 }
@@ -143,7 +143,7 @@
     
     NSError *error = nil;
     NSArray *result = [context executeFetchRequest:fetchRequest error:&error];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
     
     return result ? result : @[];
 }
@@ -154,7 +154,7 @@
     
     NSError *error = nil;
     NSArray *result = [context executeFetchRequest:fetchRequest error:&error];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
     
     return result ? result : @[];
 }
@@ -189,7 +189,7 @@
     
     NSError *error = nil;
     [fetchedResultsController performFetch:&error];
-    FAIL_ON_ERROR(error);
+    [DPDataStorage failOnError: error];
     
     return fetchedResultsController;
 }
